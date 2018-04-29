@@ -49,10 +49,11 @@ and add to PATH using
 
 Usage:
 
-        blimit  -n <count>
-	        -l <effective lum[,error]>
-                -b [background (0)[,error]]
-                -c [CL (0.95)]
+        blimit  
+		-n <count>
+		-l <effective lum[,error]>
+		-b [background (0)[,error]
+		-c [CL (0.95)]
 
 If the background is not given, it is assumed to be zero (actually 1.e-4). 
 
