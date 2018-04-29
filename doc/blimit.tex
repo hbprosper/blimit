@@ -1,0 +1,377 @@
+\documentclass[preprint,eqsecnum,aps]{revtex4}
+\usepackage{amsmath}
+
+\font\bbb=msbm10
+\def \R {\hbox{\bbb R}}
+\def \E {\hbox{\bbb E}}
+\def \V {\hbox{\bbb V}}
+\def \P {\hbox{\bbb P}}
+\def \C {\hbox{\bbb C}}
+
+\newcommand{\blimit}{\tt blimit}
+
+\newcommand{\normal}[2]{{\rm Gaussian(#1, #2)}}
+\newcommand{\poisson}[2]{{\rm Poisson}(#1, #2)}
+\newcommand{\gam}[2]{{\rm Gamma}(#1, #2)}
+\newcommand{\btheta}{\mathbf{\theta}}
+\newcommand{\blambda}{\mathbf{\lambda}}
+\newcommand{\bTheta}{\mathbf \Theta}
+\newcommand{\bLambda}{\mathbf \Lambda}
+\newcommand{\bomega}{\mathbf \omega }
+\newcommand{\bSigma}{\mathbf \Sigma}
+\newcommand{\htheta}{\hat \theta}
+\newcommand{\hTheta}{\hat \Theta}
+\newcommand{\thetaz}{\theta_{0}}
+
+\newcommand{\B}{{\cal B}}
+
+\newcommand{\ha}{\hat{a}}
+\newcommand{\hb}{\hat{b}}
+\newcommand{\hA}{A}
+\newcommand{\hB}{B}
+\newcommand{\da}{\delta a}
+\newcommand{\db}{\delta b}
+
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bd}{\mathbf{d}}
+\newcommand{\bn}{\mathbf{n}}
+\newcommand{\bx}{\mathbf{x}}
+\newcommand{\bA}{\mathbf A}
+\newcommand{\bB}{\mathbf B}
+\newcommand{\bD}{\mathbf D}
+\newcommand{\bX}{\mathbf X}
+\newcommand{\lum}{{\mathcal L}}
+\newcommand{\sigU}{\sigma^{\rm u}}
+\newcommand{\sigM}{\sigma^{\rm max}}
+\newcommand{\flatpri}[1]{\pi_{\rm F}(#1)}
+\newcommand{\comb}[2]{\left( \begin{array}{c} #1 \\ #2 \end{array} \right)}
+\newcommand{\prior}[1]{\pi(#1)}
+\newcommand{\pdf}[2]{p(#1|#2)}
+\newcommand{\prob}[2]{\mathbb{P}(#1|#2)}
+
+
+\newcommand{\Equation}[1]{Equation (\ref{eq:#1})}
+\newcommand{\Eq}[1]{Eq.\ (\ref{eq:#1})}
+\newcommand{\Eqs}[2]{Eqs.\ (\ref{eq:#1}) and (\ref{eq:#2})}
+\newcommand{\Fig}[1]{Fig.\ \ref{fig:#1}}
+\newcommand{\Figure}[1]{Figure\ (\ref{fig:#1})}
+\newcommand{\Sec}[1]{Sect.\ \ref{sec:#1}}
+
+%-------------------------------------------------------------------
+\begin{document}
+%\draft
+\preprint{
+    \vbox{
+        \rightline{D\O Note\break}
+    }
+}
+\title{BLIMIT - Yet Another Program To Compute Upper Limits}
+
+\author{Harrison B. Prosper}
+\affiliation{Florida State University, Tallahassee, Florida 32306}
+
+\author{Supriya Jain}
+\affiliation{University of Oklahoma}
+
+\date{October 25, 2005}
+
+\begin{abstract}
+This note describes the program {\tt blimit}, developed within the
+D\O\ Run II Single Top Group, to compute upper limits on
+cross-sections given an observed count $n$, an estimate of the effective 
+integrated luminosity 
+$\ha \equiv \hat{\epsilon} \hat{\lum} \pm \delta a$ 
+and an estimate of the background
+$\hb \pm \delta b$. The program is intended to replace the D\O\ Web-based
+limit calculator with one that can handle large relative uncertainties,
+sensibly.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+In the absence of sufficient data to measure a
+cross-section the accepted practice is to set an {\em upper
+limit}, at some specified {\em confidence level} (CL), on the
+cross section for the process under investigation; that is, the
+convention is to make an assertion of the form
+\begin{equation}
+\label{eq:LimitStatement}
+        \sigma < \sigU(\bx) \, \, \, \mbox {at 95 \% CL},
+\end{equation}
+where $\bx$ represents the {\em observed} data and $\sigU(\bx)$
+the upper limit on the cross-section $\sigma$. There are two
+well-established interpretations of the above statement:
+\begin{itemize}
+\item {\bf frequentist} --- In 
+an ensemble of infinitely many experiments --- in each of 
+which an upper limit has been
+calculated using the {\em same} frequentist procedure, but not 
+necessarily for the same quantity, 95 \% of assertions
+of the form $q <
+q_U(\bx)$ would be true.
+We note that, with respect to the ensemble of experiments, each
+quantity $q$ is presumed to be a {\em fixed} number 
+while, in general, $q_U(\bx)$ varies
+from one experiment to another. Note also that
+a confidence level is a property not of the single statement
+$q < q_U(\bx)$ but rather of the ensemble of such
+statements of which the statement we actually make in our
+{\em single} experiment is presumed to
+be a member \cite{Neyman}. Consequently, without an explicit
+specification of the (infinite) ensemble into which our experiment is
+considered to be embedded the confidence level is undefined. 
+
+{\em comments} ---
+We note that a real, but {\em finite}, ensemble exists, namely, 
+the ensemble of all published 95\% upper limits. However, since we do not
+know the true answers for {\em every one} of the published limits, we have
+no operational way to ascertain their {\em coverage}; that is,
+we cannot ascertain if the fraction of upper limits that exceed their
+associated true values $q$ is in fact, at least, 95 \%. 
+It is therefore unclear
+what objective utility can be ascribed to such an ensemble, albeit a
+{\em real} one. 
+
+On the other hand, on a computer we can always simulate a virtual 
+ensemble --- a virtual D\O , and
+calculate its coverage properties since we know the true values of $q$. But
+since these ensembles are {\em not real}, again it is unclear what is
+their operational utility, other than to verify that some procedure works,
+on average, as one would wish it to, within the virtual ensemble.
+ 
+\item {\bf Bayesian} --- The {\em degree of belief} in the
+statement $\sigma < \sigU(\bx)$ is 95 \%. Note that the confidence
+level, being a degree of belief, pertains to the statement
+actually made and not to any embedding of that statement in an ensemble
+of such. This of course does not prevent us from studying, if we
+believe it useful,
+the coverage properties of the Bayesian limits with respect to any virtual
+ensemble we wish. This is done, typically, to check that
+the coverage is roughly the same as the assigned degree of belief.
+\end{itemize}
+
+If pressed hard most
+particle physicists would claim to adhere to the frequentist
+interpretation of limits. In practice, most find it very hard
+{\em not} to think about them in a Bayesian way. Given this
+psychological reality, together with a host of cogent conceptual
+and technical arguments \cite{BayesianArguments}, the D\O\
+Collaboration~\cite{StatisticsWorkingGroup}, 
+and later CDF, agreed to use Bayesian methods to
+compute upper limits. The D\O\ Web-based limit
+calculator was a simple outcome of this agreement. Recently,
+this recommendation has been re-affirmed~\cite{Landsberg}. (The D\O\ 
+Limits Committee, however, leaves as an option the 
+use of the $CL_S$ method~\cite{CLS}. (HBP: My own view is
+that $CL_S$ does not represent a conceptual advance.)
+
+The {\tt blimit} program was developed to overcome a limitation in
+the Web-based limit calculator. {\tt blimit} computes Bayesian
+upper limits also, but, unlike the Web-based calculator,
+{\tt blimit} is designed to handle, sensibly, large relative errors
+as well as small ones.
+
+\section{Mathematical Background}
+Many different lines of reasoning \cite{BayesianArguments} lead to
+the conclusion that Bayes' theorem
+\begin{equation}
+\label{eq:BayesTheorem} \pdf{\btheta, \blambda}{\bx} =
+\frac{\pdf{\bx}{\btheta, \blambda} \, \prior{\btheta, \blambda}
+}{\int_{\bTheta} \int_{\bLambda}\pdf{\bx}{\btheta, \blambda} \,
+\prior{\btheta, \blambda} d\blambda \, d\btheta},
+\end{equation}
+is the appropriate mathematical framework to perform coherent
+inferences about a set of parameters $(\btheta,\blambda)$, where
+$\btheta$ represents one or more {\em parameters of interest}, for
+example a cross-section, and $\blambda$ represents all other
+parameters such as acceptances and backgrounds, referred to
+collectively as {\em nuisance parameters}. The functions
+$\prior{\btheta, \blambda}$, $\pdf{\bx}{\btheta, \blambda}$ and
+$\pdf{\btheta, \blambda}{\bx}$ are the {\em prior}, {\em model}
+and {\em posterior} densities, respectively. Sometimes (and
+loosely) $\pdf{\bx}{\btheta, \blambda}$ is referred to as the {\em
+likelihood}. 
+The prior encodes, probabilistically, what is known (or assumed)
+about the parameters independently of the data $\bx$, but in light
+of full knowledge of the model density, while the posterior
+density encodes, probabilistically, a synthesis of the knowledge
+gained from the data and the prior knowledge. The model density
+encodes what is known about the set of possible observations.
+
+\subsection{Model}
+The {\tt blimit} program uses the model 
+\begin{equation}
+\label{eq:Model}
+    \pdf{n}{\sigma, a, b} = \poisson{n}{a \sigma + b},
+\end{equation}
+where $n$ is the observed count, $a = \epsilon \lum$ is the 
+acceptance times efficiency, $\epsilon$, 
+times the integrated luminosity $\lum$ and
+ $b$ is the background. We assume that we have estimates $\ha \pm \da$ and
+$\hb \pm \db$ for the effective luminosity and background, respectively.
+
+\subsection{Prior}
+We first factorize the prior density $\prior{\sigma, a, b}$ as follows
+\begin{eqnarray}
+    \prior{\sigma, a, b} 	& = & 
+					\prior{a, b|\sigma} \,
+    					\prior{\sigma}, \nonumber \\
+				& = & 	\prior{a | b,\sigma} \,
+					\prior{b | \sigma} \,
+    			\prior{\sigma},
+\end{eqnarray}
+into a prior $\prior{\sigma}$ for the cross-section
+and two that depend on the nuisance parameters $a$ and $b$, 
+conditional on the
+value of the cross-section. We assume that our {\em a priori} knowledge of
+any one of the parameters
+$a$, $b$ and $\sigma$ is independent of our {\em a priori} knowledge of
+the other two. 
+We can then write $\prior{a| b, \sigma} = \prior{a}$ and
+$\prior{b | \sigma} = \prior{b}$. 
+Given $\prior{a}$ and $\prior{b}$, it is convenient first to 
+compute the {\em marginal
+model density} (or marginal likelihood, if one prefers)
+\begin{equation}
+\label{eq:MarginalDensity} 
+\pdf{n}{\sigma} = \int \int 
+\pdf{n}{\sigma, a, b} \, \prior{a} \, \prior{b} \, da \, db ,
+\end{equation}
+and re-write \Eq{BayesTheorem} as
+\begin{equation}
+\label{eq:bayesTheorem} \pdf{\sigma}{n} =
+\frac{\pdf{n}{\sigma} \, \prior{\sigma} }{\int \pdf{n}{\sigma}
+\, \prior{\sigma} \, d\sigma}.
+\end{equation}
+To complete the inference about the cross-section 
+we need functional forms for the priors
+$\prior{a}, \prior{b}$ and $\prior{\sigma}$ that reflect, in some
+way, what we know about these parameters---or wish to {\em assume} about
+them, independently of the data at hand. We assume the
+following
+\begin{eqnarray}
+    \prior{a} 		& = & \gam{a \alpha}{\hA+1} , \\
+    \prior{b} 		& = & \gam{b \beta}{\hB+1} , \\
+    \prior{\sigma} 	& = & 1/\sigM,
+\end{eqnarray}
+where $\hA = (\ha / \da)^2$, $\hB = (\hb / \db)^2$, $\alpha = \hA / \ha$,
+$\beta = \hB / \hb$ and $\sigM$ is some reasonably large upper
+bound on the cross-section.
+The choice for $\prior{\sigma}$ is merely a convenient 
+convention~\cite{StatisticsWorkingGroup}. The choices for the other priors
+can be motivated as follows. Consider how, typically, we estimate a 
+background. We construct a sample of 
+background events, apply cuts, and find that $B$ events pass the cuts. That
+number is then scaled to the observed integrated luminosity 
+to yield the estimate $\hb = B / \beta \pm \db \, (= \sqrt{B} / \beta)$. 
+If the background efficiency is
+small, we can assume that the probability to observe $B$ events is given
+by $\poisson{B}{b \beta}$ where $b$ is the mean count for which $\hb$ is
+an estimate.
+The information we now have about the unknown
+parameter $b$ is captured in
+its posterior density 
+$\pdf{b}{B} \propto \poisson{B}{b \beta} \, \pi_B(b)$,
+where $\pi_B(b)$ is the prior associated with this background 
+``experiment''. If we take $\pi_B(b)$ to be flat in $b$, then
+$\pdf{b}{B} = \gam{b \beta}{B+1} \propto \poisson{B}{b \beta}$. The posterior
+density $\pdf{b}{B}$ can now serve as the prior density $\prior{b}$ for the
+next level of inference. An
+identical argument applies to the prior $\prior{a}$.
+
+With this simple model and prior, the marginal density, \Eq{MarginalDensity},
+can be computed exactly by expanding the term $(a \sigma + b)^n$,
+in the Poisson distribution, using
+the binomial theorem, thereby transforming the double integral into a sum of 
+products of two 1-dimensional integrals, each of which can be expressed as
+a gamma function. The result is
+
+\begin{equation}
+\pdf{n}{\sigma} = \alpha^{A+1} \beta^{B+1} 
+	\sum_{r=0}^n C_r \frac{\sigma^r}{(\sigma + \alpha)^{A+r+1}},
+\end{equation}
+where
+\begin{eqnarray}
+C_r & = & \frac{\Gamma(A+r+1)}{\Gamma(A+1) \Gamma(r+1)}
+\frac{\Gamma(B+n-r+1)}{\Gamma(B+1) \Gamma(n-r+1)!}.
+%	& = & 	\frac{1}{AB} \, 
+%		\frac{1}{\B(A, r+1) \B(B, n-r+1)},
+\end{eqnarray}
+%where $\B(m,n) = \Gamma(m) \Gamma(n) / \Gamma(m+n)$ is the beta function. The
+%posterior density $\pdf{\sigma}{n}$, with $\prior{\sigma} = 1/\sigM$, 
+%is then given by
+%\begin{equation}
+%	\pdf{\sigma}{n} = \frac{\sum_{r=0}^n C_r \,  
+%		\sigma^r / (\sigma + \alpha)^{A+r+1}}
+%	{\sum_{r=0}^n C_r 
+%	\int_0^{\sigM} \, \sigma^r / (\sigma + \alpha)^{A+r+1} d\sigma}.
+%\end{equation}
+%If we are prepared to make the idealization $\sigM = \infty$, we obtain,
+%finally,
+%\begin{equation}
+%	\pdf{\sigma}{n} = \alpha^A  
+%	\frac{\sum_{r=0}^n  \B(A, r+1)^{-1} \B(B, n-r+1)^{-1} \,  
+%		\sigma^r  (\sigma + \alpha)^{-(A+r+1)}}
+%		{\sum_{r=0}^n \B(B, n-r+1)^{-1} }.
+%\end{equation}
+%This shows, incidentally, that the posterior density $\pdf{\sigma}{n}$
+%is well-defined in the sense that it integrates to unity, as any
+%decent probability density should.
+
+\subsection{Limits}
+Given the posterior density $\pdf{\sigma}{n}$, computed as in
+\Eq{BayesTheorem}, the upper limit $\sigU$ is obtained by
+solving
+\begin{equation}
+\label{eq:CLimit} CL = \int_0^{\sigU} \, \pdf{\sigma}{n} \,
+d\sigma
+\end{equation}
+for $\sigU$, where $CL$ is the desired confidence level.
+See the README file in the {\tt blimit} release 
+%(in {\tt TopStatistics}) 
+for practical details.
+
+%\section{Studies}
+
+
+%{ \bf T O D O: }
+
+%(1) Add your results of comparisons to existing web program 
+%and {\tt blimit}.
+
+%(2) Try to get it to compile and link within TopStatistics.
+
+\section*{Acknowledgments}
+The {\tt blimit} program grew out of the work of the
+Run II D\O\ Single Top Group.
+
+\begin{thebibliography}{}
+
+\bibitem{Neyman} J.~Neyman, Phil. Trans. R. Soc. London {\bf A236}, 333
+(1937); G. Feldman and R. Cousins, Phys. Rev. {\bf D57},
+  3873 (1998).
+
+\bibitem{BayesianArguments} R. T.
+Cox, ``Probability, Frequency, and Reasonable Expectation,'' Am.
+J. Phys. {\bf 14}, 1-13 (1946); H.~Jeffreys, \emph{Theory of
+Probability}, 3rd edition, Oxford University Press, (1961);
+E.T.Jaynes and L. Bretthorst, \emph{Probability Theory, the Logic
+of Science}, Oxford, 2003.
+
+\bibitem{StatisticsWorkingGroup}
+I.~Bertram {\em et al.}, D\O Note 3476, ``A Recipe for the
+Construction of Confidence Limits'' (1998).
+
+\bibitem{Landsberg}
+D\O\ Limits Committee, G. Landsberg {\em et al.}, 2004.
+
+\bibitem{CLS}
+See, for example, ``Calculating $CL_S$ Limits,'' 
+H. B. Prosper, D\O Note 4492, June 8, 2004.
+
+\end{thebibliography}
+
+\end{document}
+
