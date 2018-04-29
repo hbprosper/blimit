@@ -50,9 +50,9 @@ and add to PATH using
 Usage:
 
         blimit  -n <count>
-				   -l <effective lum[,error]>
-                   -b [background (0)[,error]]
-                   -c [CL (0.95)]
+		-l <effective lum[,error]>
+                -b [background (0)[,error]]
+                -c [CL (0.95)]
 
 If the background is not given, it is assumed to be zero (actually 1.e-4). 
 
@@ -60,12 +60,12 @@ If the background is not given, it is assumed to be zero (actually 1.e-4).
 
 	blimit -n0 -l1 -c0.9 
 
-observed count:        0
-eff.lumi/sigmal:        1.000 +/- 0.000
-background:              0.000 +/- 0.000
-CL:                    0.900
-Searching for limit in range [0, 8]
-upper limit:        2.2996
+	observed count:        0
+	eff.lumi/sigmal:       1.000 +/- 0.000
+	background:            0.000 +/- 0.000
+	CL:                    0.900
+	Searching for limit in range [0, 8]
+	upper limit:        2.2996
 
 as one expects for zero background, unit effective integrated
 luminosity (or signal strength), and
@@ -75,21 +75,21 @@ zero relative error and a flat prior for the cross-section.
 
 	blimit -n1 -l1 -c0.90
 
-observed count:        1
-eff.lumi/sigmal:        1.000 +/- 0.000
-background:              0.000 +/- 0.000
-CL:                    0.900
-Searching for limit in range [0, 12.3137]
-upper limit:        3.8889
+	observed count:        1
+	eff.lumi/sigmal:       1.000 +/- 0.000
+	background:            0.000 +/- 0.000
+	CL:                    0.900
+	searching for limit in range [0, 12.3137]
+	upper limit:        3.8889
 
 
 ### Example 3:
 
 	blimit -n1 -l1,0.2 -c0.90
 
-observed count:        1
-eff.lumi/sigmal:        1.000 +/- 0.200
-background:              0.000 +/- 0.000
-CL:                    0.900
-Searching for limit in range [0, 12.3137]
-upper limit:        4.1162
+	observed count:        1
+	eff.lumi/sigmal:       1.000 +/- 0.200
+	background:            0.000 +/- 0.000
+	CL:                    0.900
+	searching for limit in range [0, 12.3137]
+	upper limit:        4.1162
