@@ -50,7 +50,7 @@ and add to PATH using
 Usage:
 
         blimit  -n <count>
-		-l <effective lum[,error]>
+	        -l <effective lum[,error]>
                 -b [background (0)[,error]]
                 -c [CL (0.95)]
 
